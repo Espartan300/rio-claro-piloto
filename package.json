@@ -1,0 +1,1 @@
+{"name":"rio-claro-piloto","version":"0.1.0","private":true,"type":"module","engines":{"node":">=22.9"},"scripts":{"start":"node server.js","dev":"node --env-file-if-exists=.env --watch server.js"},"dependencies":{"@azure/ai-projects":"^2.10.0","@azure/identity":"^4.14.1","express":"^5.1.0"}}

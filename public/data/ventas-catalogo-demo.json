@@ -1,0 +1,211 @@
+{
+  "year": 2026,
+  "currency": "MXN",
+  "inventoryAsOf": "2026-11-02",
+  "branches": [
+    { "id": "guadalajara", "name": "Guadalajara" },
+    { "id": "zapopan", "name": "Zapopan" },
+    { "id": "leon", "name": "León" },
+    { "id": "queretaro", "name": "Querétaro" },
+    { "id": "aguascalientes", "name": "Aguascalientes" }
+  ],
+  "products": [
+    {
+      "sku": "DEMO-LIM-001",
+      "name": "Cloro líquido 1 L",
+      "category": "Limpieza",
+      "unit": "Botella de 1 L",
+      "price": 28.5,
+      "stockByBranch": {
+        "guadalajara": 48,
+        "zapopan": 26,
+        "leon": 0,
+        "queretaro": 19,
+        "aguascalientes": 15
+      },
+      "aliases": ["Cloro", "Cloro 1L", "CLORO LITRO", "Cloro de litro", "Blanqueador 1000 ml"]
+    },
+    {
+      "sku": "DEMO-LIM-002",
+      "name": "Limpiador multiusos 1 L",
+      "category": "Limpieza",
+      "unit": "Botella de 1 L",
+      "price": 39.9,
+      "stockByBranch": {
+        "guadalajara": 30,
+        "zapopan": 12,
+        "leon": 8,
+        "queretaro": 0,
+        "aguascalientes": 10
+      },
+      "aliases": ["Multiusos", "Multiusos litro", "Limpiador general 1000 ml"]
+    },
+    {
+      "sku": "DEMO-HIG-001",
+      "name": "Jabón líquido para manos 500 ml",
+      "category": "Higiene",
+      "unit": "Botella de 500 ml",
+      "price": 34,
+      "stockByBranch": {
+        "guadalajara": 25,
+        "zapopan": 18,
+        "leon": 14,
+        "queretaro": 9,
+        "aguascalientes": 0
+      },
+      "aliases": ["Jabón", "Jabón manos", "Jabón manos 500", "Jabón líquido medio litro"]
+    },
+    {
+      "sku": "DEMO-LIM-003",
+      "name": "Desengrasante concentrado 1 L",
+      "category": "Limpieza",
+      "unit": "Botella de 1 L",
+      "price": 62.5,
+      "stockByBranch": {
+        "guadalajara": 8,
+        "zapopan": 0,
+        "leon": 11,
+        "queretaro": 6,
+        "aguascalientes": 5
+      },
+      "aliases": ["Desengrasante", "Desengrasante litro", "Desengrasante 1000 ml"]
+    },
+    {
+      "sku": "DEMO-HIG-002",
+      "name": "Toalla de papel institucional",
+      "category": "Higiene",
+      "unit": "Paquete",
+      "price": 89,
+      "stockByBranch": {
+        "guadalajara": 14,
+        "zapopan": 10,
+        "leon": 0,
+        "queretaro": 7,
+        "aguascalientes": 3
+      },
+      "aliases": ["Toalla de papel", "Toalla institucional", "Papel toalla paquete"]
+    }
+  ],
+  "monthlySales": [
+    {
+      "month": "Enero",
+      "branchAmounts": {
+        "guadalajara": 1180000,
+        "zapopan": 960000,
+        "leon": 810000,
+        "queretaro": 740000,
+        "aguascalientes": 690000
+      }
+    },
+    {
+      "month": "Febrero",
+      "branchAmounts": {
+        "guadalajara": 1120000,
+        "zapopan": 930000,
+        "leon": 790000,
+        "queretaro": 715000,
+        "aguascalientes": 675000
+      }
+    },
+    {
+      "month": "Marzo",
+      "branchAmounts": {
+        "guadalajara": 1250000,
+        "zapopan": 1010000,
+        "leon": 860000,
+        "queretaro": 780000,
+        "aguascalientes": 725000
+      }
+    },
+    {
+      "month": "Abril",
+      "branchAmounts": {
+        "guadalajara": 1210000,
+        "zapopan": 990000,
+        "leon": 835000,
+        "queretaro": 760000,
+        "aguascalientes": 705000
+      }
+    },
+    {
+      "month": "Mayo",
+      "branchAmounts": {
+        "guadalajara": 1320000,
+        "zapopan": 1060000,
+        "leon": 900000,
+        "queretaro": 820000,
+        "aguascalientes": 755000
+      }
+    },
+    {
+      "month": "Junio",
+      "branchAmounts": {
+        "guadalajara": 1280000,
+        "zapopan": 1040000,
+        "leon": 880000,
+        "queretaro": 800000,
+        "aguascalientes": 745000
+      }
+    },
+    {
+      "month": "Julio",
+      "branchAmounts": {
+        "guadalajara": 1390000,
+        "zapopan": 1120000,
+        "leon": 950000,
+        "queretaro": 865000,
+        "aguascalientes": 800000
+      }
+    },
+    {
+      "month": "Agosto",
+      "branchAmounts": {
+        "guadalajara": 1360000,
+        "zapopan": 1100000,
+        "leon": 935000,
+        "queretaro": 850000,
+        "aguascalientes": 790000
+      }
+    },
+    {
+      "month": "Septiembre",
+      "branchAmounts": {
+        "guadalajara": 1300000,
+        "zapopan": 1050000,
+        "leon": 895000,
+        "queretaro": 815000,
+        "aguascalientes": 755000
+      }
+    },
+    {
+      "month": "Octubre",
+      "branchAmounts": {
+        "guadalajara": 1450000,
+        "zapopan": 1170000,
+        "leon": 990000,
+        "queretaro": 900000,
+        "aguascalientes": 835000
+      }
+    },
+    {
+      "month": "Noviembre",
+      "branchAmounts": {
+        "guadalajara": 1410000,
+        "zapopan": 1140000,
+        "leon": 970000,
+        "queretaro": 880000,
+        "aguascalientes": 815000
+      }
+    },
+    {
+      "month": "Diciembre",
+      "branchAmounts": {
+        "guadalajara": 1580000,
+        "zapopan": 1280000,
+        "leon": 1080000,
+        "queretaro": 980000,
+        "aguascalientes": 910000
+      }
+    }
+  ]
+}

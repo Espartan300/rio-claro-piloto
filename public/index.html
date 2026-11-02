@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Asistente operativo de demostración de Distribuidora Río Claro">
+<title>Río Claro | Centro de operaciones</title>
+<style>
+:root {
+color-scheme: light;
+font-family: "Segoe UI", system-ui, sans-serif;
+color: #34223a;
+background: #f7f3f8;
+font-synthesis: none;
+text-rendering: optimizeLegibility;
+}
+
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, input, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.55; }
+button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 3px solid #d35b9e;
+  outline-offset: 3px;
+}
+
+.app-shell { min-height: 100vh; }
+.topbar {
+  min-height: 5.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 2rem;
+  color: #fff;
+  background: linear-gradient(110deg, #26052f 0%, #3b0646 64%, #67114f 100%);
+  border-bottom: 3px solid #ba287a;
+}
+.brand { display: flex; align-items: center; gap: 0.85rem; color: inherit; text-decoration: none; }
+.brand-mark {
+  width: 2.7rem;
+  height: 2.7rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 0.8rem;
+  color: #32083b;
+  background: #f1b1d0;
+}
+.brand-mark img { display: block; width: auto; max-width: 2.25rem; height: 2.2rem; filter: brightness(0.55); object-fit: contain; }
+.brand-name { margin: 0; font-size: 1.05rem; font-weight: 750; letter-spacing: 0.02em; }
+.brand-subtitle { margin: 0.15rem 0 0; color: #bfd0dc; font-size: 0.8rem; }
+.topbar-meta { display: flex; align-items: center; gap: 0.75rem; }
+.prototype-badge, .session-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+.prototype-badge { color: #f4d8e8; background: #ffffff12; border: 1px solid #ffffff24; }
+.session-label { color: #f5c7e0; background: #c22b8130; }
+.workspace { min-height: calc(100vh - 5.25rem); display: grid; grid-template-columns: 15.5rem minmax(0, 1fr); }
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  color: #f0e2f1;
+  background: linear-gradient(180deg, #35103f 0%, #2a0a34 100%);
+}
+.nav-title { margin: 0 0 0.7rem 0.65rem; color: #c5a9ca; font-size: 0.7rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase; }
+.primary-nav { display: grid; gap: 0.35rem; }
+.nav-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  color: #f0e2f1;
+  background: transparent;
+  text-align: left;
+  font-size: 0.91rem;
+  font-weight: 600;
+  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+.nav-link:hover { color: #fff; background: #ffffff0d; }
+.nav-link[aria-current="page"] { color: #fff; background: #a51d70; border-color: #d34b9a; }
+.nav-number { width: 1.5rem; color: #c8b1ce; font-size: 0.7rem; font-variant-numeric: tabular-nums; }
+.nav-link[aria-current="page"] .nav-number { color: #f9d9eb; }
+.sidebar-note { margin-top: auto; padding: 1rem 0.65rem 0; color: #c7b5ca; font-size: 0.78rem; line-height: 1.55; border-top: 1px solid #ffffff1a; }
+main { width: 100%; max-width: 78rem; margin: 0 auto; padding: 2.25rem clamp(1.25rem, 4vw, 3.75rem) 1.5rem; }
+.page-heading { margin: 0 0 1.5rem; }
+.eyebrow { margin: 0 0 0.4rem; color: #941b69; font-size: 0.75rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase; }
+h1, h2, h3 { color: #39223f; line-height: 1.25; }
+h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.35rem); letter-spacing: -0.035em; }
+h2 { margin: 0 0 0.6rem; font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+.page-description { max-width: 48rem; margin: 0.65rem 0 0; color: #627285; line-height: 1.6; }
+.chat-panel, .home-card, .welcome-card, .guide-card, .dashboard-panel, .metric-card {
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  border: 1px solid #eadfea;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 0.65rem 1.8rem #1c34450a;
+}
+.chat-panel { margin-top: 1rem; }
+.chat-panel > p { color: #627285; line-height: 1.6; }
+.home-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(15rem, 0.8fr); gap: 1rem; }
+.welcome-card { position: relative; min-height: 16rem; overflow: hidden; padding-right: clamp(8rem, 19vw, 15rem); color: #fff; background: linear-gradient(125deg, #2b0735 0%, #54105d 58%, #9a1d70 100%); border: 0; }
+.welcome-card::after { position: absolute; z-index: 0; width: 13rem; height: 13rem; right: -3rem; bottom: -7rem; border: 1px solid #ffffff2b; border-radius: 50%; content: ""; box-shadow: 0 0 0 1.6rem #ffffff08, 0 0 0 3.2rem #ffffff06; }
+.welcome-silhouette { position: absolute; z-index: 1; right: -3%; bottom: -58%; width: auto; height: 165%; opacity: 0.36; filter: blur(0.8px); pointer-events: none; user-select: none; }
+.welcome-card .eyebrow { color: #f3bddb; }
+.welcome-card h2 { position: relative; z-index: 2; max-width: 34rem; margin: 0; color: #fff; font-size: clamp(1.5rem, 2.4vw, 2rem); }
+.welcome-card p:last-child { position: relative; z-index: 2; max-width: 38rem; margin-bottom: 0; color: #f2deee; line-height: 1.65; }
+.guide-card h2 { font-size: 1.1rem; }
+.guide-list { margin: 0; padding-left: 1.2rem; color: #6f5e73; line-height: 1.8; }
+.module-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.9rem; margin-top: 1rem; }
+.home-card { min-height: 10rem; display: flex; flex-direction: column; align-items: flex-start; text-align: left; color: #34223a; cursor: pointer; transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+.home-card:hover { transform: translateY(-2px); border-color: #d79abe; box-shadow: 0 0.8rem 1.8rem #49124712; }
+.card-kicker { color: #941b69; font-size: 0.72rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; }
+.home-card strong { margin-top: 0.65rem; color: #39223f; font-size: 1.05rem; }
+.home-card span:last-child { margin-top: 0.45rem; color: #6f5e73; font-size: 0.88rem; line-height: 1.5; }
+.notice { margin: 1rem 0 0; padding: 0.85rem 1rem; border-left: 4px solid #b52b79; border-radius: 0.4rem; color: #533348; background: #f5eaf2; line-height: 1.55; }
+.dashboard-panel { margin-top: 1rem; padding: clamp(1rem, 2.4vw, 1.6rem); border: 1px solid #eadfea; border-radius: 1rem; background: #fff; box-shadow: 0 0.65rem 1.8rem #1c34450a; }
+.dashboard-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+.dashboard-heading h2 { margin-bottom: 0.35rem; }
+.dashboard-heading p { margin: 0; color: #6f5e73; line-height: 1.55; }
+.simulation-badge { display: inline-flex; align-items: center; padding: 0.4rem 0.7rem; border: 1px solid #dfb2cf; border-radius: 999px; color: #761453; background: #fbf0f7; font-size: 0.75rem; font-weight: 750; }
+.metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+.metric-card { min-width: 0; padding: 0.9rem 1rem; border: 1px solid #eee4ef; border-radius: 0.75rem; background: #fcf9fc; box-shadow: none; }
+.metric-label { display: block; color: #756579; font-size: 0.78rem; font-weight: 650; }
+.metric-value { display: block; margin-top: 0.35rem; color: #4a1553; font-size: clamp(1.05rem, 2vw, 1.45rem); font-weight: 750; overflow-wrap: anywhere; }
+.chart-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(10rem, 13rem); align-items: center; gap: 1rem; margin-top: 1rem; }
+.sales-chart { display: block; width: 100%; min-width: 0; height: auto; overflow: visible; }
+.chart-gridline { stroke: #eadfea; stroke-width: 1; }
+.chart-axis-label { fill: #766b7a; font-family: inherit; font-size: 11px; }
+.chart-series-line { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.chart-series-dot { stroke: #fff; stroke-width: 2; }
+.chart-legend { display: grid; gap: 0.65rem; margin: 0; padding: 0; list-style: none; }
+.chart-legend li { display: flex; align-items: center; gap: 0.55rem; color: #58465e; font-size: 0.84rem; line-height: 1.4; }
+.legend-swatch { flex: 0 0 auto; width: 0.7rem; height: 0.7rem; border-radius: 50%; }
+.chart-caption, .table-note { margin: 0.75rem 0 0; color: #766b7a; font-size: 0.82rem; line-height: 1.55; }
+.dashboard-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.85rem; }
+.dashboard-link { padding: 0.62rem 0.9rem; border: 1px solid #b78aa9; border-radius: 0.55rem; color: #65104e; background: #fff; font-weight: 700; }
+.dashboard-link:hover { border-color: #8d1b68; color: #fff; background: #8d1b68; }
+.data-table-wrap { width: 100%; overflow-x: auto; margin-top: 1rem; border: 1px solid #eadfea; border-radius: 0.7rem; }
+.data-table { width: 100%; border-collapse: collapse; color: #49364f; font-size: 0.86rem; }
+.data-table caption { padding: 0.8rem; color: #58465e; background: #fcf9fc; font-weight: 700; text-align: left; }
+.data-table th, .data-table td { padding: 0.7rem 0.8rem; border-top: 1px solid #eee4ef; text-align: left; white-space: nowrap; }
+.data-table thead th { color: #512349; background: #f6eef6; font-size: 0.78rem; }
+.data-table tbody th { font-weight: 650; }
+.data-table tfoot th, .data-table tfoot td { color: #45124d; background: #f6eef6; font-weight: 750; }
+.catalog-aliases { max-width: 24rem; white-space: normal !important; }
+.inventory-product, .inventory-branches { white-space: normal !important; }
+.inventory-product { min-width: 9rem; }
+.inventory-branches { min-width: 10rem; }
+.inventory-branches ul { margin: 0; padding-left: 1.1rem; }
+.section-heading { margin-top: 2rem; }
+.section-heading p { margin: 0; color: #6f5e73; line-height: 1.55; }
+#chat-log { min-height: 12rem; max-height: 55vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem 0; }
+.message { max-width: 90%; padding: 0.75rem 1rem; border-radius: 0.85rem; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.55; }
+.message-user { align-self: flex-end; color: #fff; background: #8d1b68; }
+.message-assistant { align-self: flex-start; color: #44344a; background: #f1ebf3; }
+.empty-state, #chat-status { color: #6f5e73; }
+label { display: block; margin-bottom: 0.5rem; color: #49364f; font-weight: 650; line-height: 1.5; }
+textarea { width: 100%; min-height: 6rem; padding: 0.8rem 0.9rem; border: 1px solid #d3c4d6; border-radius: 0.65rem; color: #34223a; background: #fdfbfd; font: inherit; line-height: 1.5; resize: vertical; }
+textarea:focus, input:focus-visible { border-color: #a51d70; }
+.form-footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 0.85rem; }
+button[type="submit"], .form-footer button:not(.nav-link) {
+  padding: 0.72rem 1.15rem;
+  border: 0;
+  border-radius: 0.6rem;
+  color: #fff;
+  background: #8d1b68;
+  font-weight: 700;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+.invoice-results { margin-top: 1rem; padding: 1rem; border: 1px solid #e4d8e7; border-radius: 0.75rem; background: #faf7fb; line-height: 1.6; }
+button[type="submit"]:hover:not(:disabled), .form-footer button:hover:not(:disabled) { background: #64104f; transform: translateY(-1px); }
+input[type="file"] { display: block; width: 100%; margin: 0.5rem 0 1rem; padding: 0.75rem; border: 1px dashed #b6a2ba; border-radius: 0.65rem; color: #66536b; background: #fbf8fc; font: inherit; }
+input[type="checkbox"] { width: 1.05rem; height: 1.05rem; margin: 0 0.5rem 0 0; vertical-align: middle; accent-color: #8d1b68; }
+.invoice-results dl { display: grid; grid-template-columns: minmax(8rem, 0.35fr) 1fr; gap: 0.5rem 1rem; }
+.invoice-results dt { color: #49364f; font-weight: 700; }
+.invoice-results dd { margin: 0; color: #66536b; overflow-wrap: anywhere; }
+#chat-status, #invoice-status, #text-analysis-status, #speech-status, #vision-status { min-height: 1.5em; color: #6f5e73; }
+footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; color: #766b7a; font-size: 0.82rem; line-height: 1.5; }
+
+@media (max-width: 900px) {
+  .topbar { padding-right: 1.25rem; padding-left: 1.25rem; }
+  .workspace { grid-template-columns: 12.5rem minmax(0, 1fr); }
+  .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-grid { grid-template-columns: 1fr; }
+  .chart-layout { grid-template-columns: 1fr; }
+  .chart-legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .topbar { min-height: auto; align-items: flex-start; flex-direction: column; gap: 0.65rem; padding: 0.9rem 1rem; }
+  .topbar-meta { flex-wrap: wrap; gap: 0.4rem; }
+  .prototype-badge, .session-label { font-size: 0.72rem; }
+  .workspace { display: flex; flex-direction: column; }
+  .sidebar { padding: 0.65rem 0.75rem; }
+  .nav-title, .sidebar-note { display: none; }
+  .primary-nav { display: flex; gap: 0.35rem; overflow-x: auto; padding-bottom: 0.15rem; }
+  .nav-link { width: auto; min-width: max-content; gap: 0.4rem; padding: 0.6rem 0.7rem; font-size: 0.8rem; }
+  .nav-number { display: none; }
+  main { padding: 1.35rem 0.9rem 1rem; }
+  .module-grid { grid-template-columns: 1fr; }
+  .welcome-card { min-height: 14rem; padding-right: 1rem; }
+  .welcome-silhouette { right: -1.5rem; bottom: -20%; height: 125%; opacity: 0.27; filter: blur(0.8px); }
+  .metric-grid { grid-template-columns: 1fr; }
+  .dashboard-actions { align-items: stretch; flex-direction: column; }
+  .dashboard-link { width: 100%; }
+  .chart-legend { grid-template-columns: 1fr; }
+  .home-card { min-height: 8rem; }
+  .chat-panel { margin-top: 0.75rem; }
+  .form-footer { align-items: stretch; flex-direction: column; }
+  .form-footer button, form button[type="submit"] { width: 100%; }
+  .invoice-results dl { grid-template-columns: 1fr; gap: 0.25rem; }
+  .invoice-results dd { margin-bottom: 0.5rem; }
+  .message { max-width: 96%; }
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+<a class="brand" href="#" data-view-target="home" aria-label="Río Claro, ir al inicio">
+<span class="brand-mark" aria-hidden="true"><img src="/images/rio-claro-silueta.png" alt=""></span>
+<span class="brand-copy">
+<p class="brand-name">Río Claro</p>
+<p class="brand-subtitle">Centro de operaciones</p>
+</span>
+</a>
+<div class="topbar-meta">
+<span class="prototype-badge">Prototipo educativo · datos sintéticos</span>
+<span class="session-label">Entorno de demostración</span>
+</div>
+</header>
+
+<div class="workspace">
+<aside class="sidebar">
+<p class="nav-title">Navegación</p>
+<nav class="primary-nav" aria-label="Módulos del centro de operaciones">
+<button class="nav-link" type="button" data-view-target="home" data-view-label="Inicio" aria-controls="home-panel" aria-current="page"><span class="nav-number">01</span>Inicio</button>
+<button class="nav-link" type="button" data-view-target="assistant" data-view-label="Asistente" aria-controls="assistant-panel"><span class="nav-number">02</span>Asistente</button>
+<button class="nav-link" type="button" data-view-target="invoices" data-view-label="Facturas" aria-controls="invoice-panel"><span class="nav-number">03</span>Facturas</button>
+<button class="nav-link" type="button" data-view-target="complaints" data-view-label="Quejas" aria-controls="complaint-panel"><span class="nav-number">04</span>Quejas</button>
+<button class="nav-link" type="button" data-view-target="voice" data-view-label="Voz" aria-controls="speech-panel"><span class="nav-number">05</span>Voz</button>
+<button class="nav-link" type="button" data-view-target="vision" data-view-label="Análisis visual" aria-controls="vision-panel"><span class="nav-number">06</span>Análisis visual</button>
+<button class="nav-link" type="button" data-view-target="sales-catalog" data-view-label="Ventas y catálogo" aria-controls="sales-catalog-panel"><span class="nav-number">07</span>Ventas y catálogo</button>
+</nav>
+<p class="sidebar-note">Herramientas de apoyo para consultar información y revisar resultados sugeridos por IA.</p>
+</aside>
+
+<main id="main-content">
+<section class="view-panel" id="home-panel" data-view-panel="home">
+<div class="page-heading">
+<p class="eyebrow">Inicio</p>
+<h1>Centro de operaciones</h1>
+<p class="page-description">Accede a las herramientas de consulta y revisión de Río Claro desde un solo lugar.</p>
+<p class="notice">Este prototipo educativo usa datos sintéticos de ventas, catálogo, precios y existencias de demostración. No consulta inventarios, pedidos ni precios reales.</p>
+</div>
+<div class="home-grid">
+<section class="welcome-card" aria-labelledby="welcome-heading">
+<p class="eyebrow">Río Claro · Asistencia operativa con IA</p>
+<img class="welcome-silhouette" src="/images/rio-claro-silueta.png" alt="" aria-hidden="true">
+<h2 id="welcome-heading">Información clara para apoyar la operación diaria.</h2>
+<p>Consulta políticas y datos de demostración, o utiliza herramientas de análisis como apoyo para la revisión humana.</p>
+</section>
+<section class="guide-card" aria-labelledby="guide-heading">
+<h2 id="guide-heading">Qué puedes hacer</h2>
+<ul class="guide-list">
+<li>Consultar información documentada.</li>
+<li>Consultar precios y existencias sintéticas por sucursal.</li>
+<li>Revisar campos extraídos de facturas.</li>
+<li>Analizar quejas e imágenes sintéticas.</li>
+<li>Dictar una queja o escuchar una respuesta.</li>
+</ul>
+</section>
+</div>
+<section class="dashboard-panel" aria-labelledby="home-dashboard-heading">
+<div class="dashboard-heading">
+<div>
+<h2 id="home-dashboard-heading">Visión estratégica · ventas por mes</h2>
+<p>Una vista de ejemplo de cómo podrían resumirse datos de sucursales.</p>
+</div>
+<span class="simulation-badge" id="home-simulation-badge">Datos simulados</span>
+</div>
+<div class="metric-grid">
+<article class="metric-card">
+<span class="metric-label">Venta anual simulada</span>
+<strong class="metric-value" id="home-annual-sales">Cargando…</strong>
+</article>
+<article class="metric-card">
+<span class="metric-label">Mes con mayor venta simulada</span>
+<strong class="metric-value" id="home-peak-month">Cargando…</strong>
+</article>
+<article class="metric-card">
+<span class="metric-label">Sucursales en el ejemplo</span>
+<strong class="metric-value" id="home-branch-count">Cargando…</strong>
+</article>
+</div>
+<div class="chart-layout">
+<svg class="sales-chart" id="home-sales-chart" viewBox="0 0 760 310" role="img" aria-labelledby="home-chart-title home-chart-description"></svg>
+<ul class="chart-legend" id="home-sales-legend" aria-label="Leyenda de ventas"></ul>
+</div>
+<p class="chart-caption" id="home-sales-status" role="status" aria-live="polite">Cargando datos sintéticos de demostración…</p>
+<div class="dashboard-actions">
+<p class="chart-caption">La gráfica es una simulación anual: no representa ventas observadas ni pronósticos comerciales.</p>
+<button class="dashboard-link" type="button" data-view-target="sales-catalog" data-view-label="Ventas y catálogo" aria-controls="sales-catalog-panel">Explorar ventas y catálogo</button>
+</div>
+</section>
+<div class="module-grid" aria-label="Accesos a módulos">
+<button class="home-card" type="button" data-view-target="assistant" data-view-label="Asistente" aria-controls="assistant-panel"><span class="card-kicker">01 · Consulta</span><strong>Asistente</strong><span>Respuestas basadas en las fuentes disponibles.</span></button>
+<button class="home-card" type="button" data-view-target="invoices" data-view-label="Facturas" aria-controls="invoice-panel"><span class="card-kicker">02 · Revisión</span><strong>Facturas</strong><span>Extracción de datos y alerta de posibles duplicados.</span></button>
+<button class="home-card" type="button" data-view-target="complaints" data-view-label="Quejas" aria-controls="complaint-panel"><span class="card-kicker">03 · Análisis</span><strong>Quejas</strong><span>Clasificación sugerida de sentimiento y aspectos.</span></button>
+<button class="home-card" type="button" data-view-target="voice" data-view-label="Voz" aria-controls="speech-panel"><span class="card-kicker">04 · Accesibilidad</span><strong>Voz</strong><span>Dicta una queja o escucha la respuesta del asistente.</span></button>
+<button class="home-card" type="button" data-view-target="vision" data-view-label="Análisis visual" aria-controls="vision-panel"><span class="card-kicker">05 · Inspección</span><strong>Análisis visual</strong><span>Describe elementos visibles en una imagen de paquetes.</span></button>
+<button class="home-card" type="button" data-view-target="sales-catalog" data-view-label="Ventas y catálogo" aria-controls="sales-catalog-panel"><span class="card-kicker">06 · Datos</span><strong>Ventas y catálogo</strong><span>Consulta productos, precios y existencias simuladas por sucursal.</span></button>
+</div>
+</section>
+
+<section class="view-panel" id="sales-catalog-panel" data-view-panel="sales-catalog" hidden>
+<div class="page-heading">
+<p class="eyebrow">Módulo 06</p>
+<h1>Ventas y catálogo</h1>
+<p class="page-description">Explora el catálogo normalizado, precios unitarios y existencias sintéticas por sucursal, además de ventas mensuales simuladas.</p>
+<p class="notice"><strong>Solo simulación educativa:</strong> productos, precios, existencias, nombres y montos fueron inventados. No representan disponibilidad comercial, no consultan sistemas reales ni deben usarse para decisiones del negocio.</p>
+</div>
+<section class="dashboard-panel" aria-labelledby="branch-chart-heading">
+<div class="dashboard-heading">
+<div>
+<h2 id="branch-chart-heading">Ventas mensuales simuladas por sucursal</h2>
+<p id="sales-period-label">Ejercicio anual de demostración</p>
+</div>
+<span class="simulation-badge">Importes ficticios · MXN</span>
+</div>
+<div class="chart-layout">
+<svg class="sales-chart" id="branch-sales-chart" viewBox="0 0 760 310" role="img" aria-labelledby="branch-chart-title branch-chart-description"></svg>
+<ul class="chart-legend" id="branch-sales-legend" aria-label="Leyenda de ventas por sucursal"></ul>
+</div>
+<p class="chart-caption" id="sales-catalog-status" role="status" aria-live="polite">Cargando datos sintéticos de demostración…</p>
+<div class="data-table-wrap" role="region" aria-label="Tabla de ventas mensuales por sucursal" tabindex="0">
+<table class="data-table" id="sales-table">
+<caption>Importes mensuales simulados y suma aritmética del ejemplo</caption>
+<thead></thead>
+<tbody></tbody>
+<tfoot></tfoot>
+</table>
+</div>
+<p class="table-note">La fila Total suma los importes de las cinco sucursales dentro de este conjunto sintético; no verifica ni reconcilia registros externos.</p>
+</section>
+
+<section class="dashboard-panel section-heading" aria-labelledby="catalog-heading">
+<div class="dashboard-heading">
+<div>
+<h2 id="catalog-heading">Catálogo unificado de demostración</h2>
+<p>Los nombres alternativos se agrupan bajo una clave y una descripción normalizadas.</p>
+</div>
+<span class="simulation-badge">Productos ficticios</span>
+</div>
+<div class="data-table-wrap" role="region" aria-label="Catálogo de productos sintético" tabindex="0">
+<table class="data-table" id="catalog-table">
+<caption>Equivalencias propuestas para ilustrar la normalización de nombres</caption>
+<thead>
+<tr><th scope="col">Clave demo</th><th scope="col">Nombre normalizado</th><th scope="col">Categoría</th><th scope="col">Unidad</th><th scope="col">Nombres encontrados</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<p class="table-note">En un proyecto real, las equivalencias y unidades deben confirmarse con el negocio antes de consolidar catálogos.</p>
+</section>
+
+<section class="dashboard-panel section-heading" aria-labelledby="inventory-heading">
+<div class="dashboard-heading">
+<div>
+<h2 id="inventory-heading">Precios y existencias de demostración</h2>
+<p>Consulta el precio unitario ficticio y las cantidades simuladas en cada sucursal.</p>
+</div>
+<span class="simulation-badge" id="inventory-cutoff-badge">Corte de inventario simulado</span>
+</div>
+<div class="data-table-wrap" role="region" aria-label="Precios y existencias sintéticas por sucursal" tabindex="0">
+<table class="data-table" id="inventory-table">
+<caption>Precios demo en MXN y existencias por sucursal; cantidades en unidades según la presentación del producto</caption>
+<thead>
+<tr><th scope="col">Producto</th><th scope="col">Precio demo</th><th scope="col">Existencias por sucursal · total</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<p class="table-note">Los precios y las cantidades son inventados, no incluyen reglas comerciales ni garantizan disponibilidad real. El asistente consulta estos mismos datos estáticos sin llamar a IA. En un proyecto real, el negocio tendría que validar catálogo, precios, unidades, impuestos y existencias vigentes.</p>
+</section>
+</section>
+
+<section class="view-panel" id="assistant-panel" data-view-panel="assistant" hidden>
+<div class="page-heading">
+<p class="eyebrow">Módulo 01</p>
+<h1>Asistente</h1>
+<p class="page-description">Pregunta sobre las políticas y la información documentada; también puedes consultar precios y existencias del catálogo sintético.</p>
+</div>
+<section class="chat-panel" aria-labelledby="chat-heading">
+<h2 id="chat-heading">¿En qué puedo ayudarte?</h2>
+<p>También puedes consultar el catálogo de demostración, por ejemplo: «¿Cuánto cloro de litro queda y en qué sucursales?» Esos precios y existencias son ficticios; si necesitas ayuda fuera de esta demostración, el contacto mostrado al pie no es operativo.</p>
+<div id="chat-log" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Conversación">
+<p id="empty-state" class="empty-state">Escribe una pregunta sobre las políticas, la información o el catálogo sintético.</p>
+</div>
+<form id="chat-form">
+<label for="message">Tu pregunta</label>
+<textarea id="message" name="message" maxlength="2000" required></textarea>
+<div class="form-footer">
+<small id="character-count">0/2000</small>
+<button type="submit" disabled>Enviar</button>
+</div>
+<p id="chat-status" role="status" aria-live="polite"></p>
+</form>
+</section>
+</section>
+
+<section class="view-panel" id="invoice-panel" data-view-panel="invoices" hidden>
+<div class="page-heading">
+<p class="eyebrow">Módulo 02</p>
+<h1>Revisión de facturas</h1>
+<p class="page-description">Extrae datos clave y señala posibles coincidencias para revisión; no autoriza pagos.</p>
+</div>
+<section class="chat-panel" aria-labelledby="invoice-heading">
+<h2 id="invoice-heading">Analizar una factura</h2>
+<p>Usa un PDF sintético. La extracción puede equivocarse y requiere revisión humana; nunca aprueba un pago.</p>
+<form id="invoice-form">
+<label>
+<input name="synthetic-confirmation" type="checkbox" required>
+Confirmo que el archivo es ficticio y no contiene datos personales ni información de facturas reales.
+</label>
+<label for="invoice-file">Selecciona un PDF</label>
+<input id="invoice-file" name="invoice" type="file" accept=".pdf,application/pdf" required>
+<button type="submit" disabled>Analizar factura</button>
+<p id="invoice-status" role="status" aria-live="polite"></p>
+</form>
+<div id="invoice-result" class="invoice-results" aria-live="polite" hidden>
+<h3>Datos extraídos — requieren revisión humana</h3>
+<dl>
+<dt>Proveedor</dt><dd id="invoice-vendor">—</dd>
+<dt>Número</dt><dd id="invoice-number">—</dd>
+<dt>Fecha</dt><dd id="invoice-date">—</dd>
+<dt>Total</dt><dd id="invoice-total">—</dd>
+</dl>
+<p id="invoice-review"></p>
+</div>
+</section>
+ </section>
+
+<section class="view-panel" id="complaint-panel" data-view-panel="complaints" hidden>
+<div class="page-heading">
+<p class="eyebrow">Módulo 03</p>
+<h1>Análisis de quejas</h1>
+<p class="page-description">Clasifica el sentimiento y los aspectos mencionados como apoyo para la revisión humana.</p>
+</div>
+<section class="chat-panel" aria-labelledby="text-analysis-heading">
+<h2 id="text-analysis-heading">Analizar el texto de una queja</h2>
+<p>La IA clasifica el texto; el resultado es una sugerencia y requiere revisión humana.</p>
+<form id="text-analysis-form">
+<label for="complaint-text">Queja de demostración</label>
+<textarea id="complaint-text" name="text" maxlength="2000" required>CASO SINTÉTICO — No corresponde a un cliente ni pedido real.
+
+El pedido llegó tarde y varias cajas estaban dañadas. Estoy muy molesto y necesito que me expliquen cómo resolverlo.</textarea>
+<button type="submit">Analizar queja</button>
+<p id="text-analysis-status" role="status" aria-live="polite"></p>
+</form>
+<div id="text-analysis-result" class="invoice-results" aria-live="polite" hidden>
+<h3>Resultado — requiere revisión humana</h3>
+<p id="text-analysis-sentiment"></p>
+<ul id="text-analysis-aspects"></ul>
+<p id="text-analysis-review"></p>
+</div>
+</section>
+</section>
+
+<section class="view-panel" id="speech-panel" data-view-panel="voice" hidden>
+<div class="page-heading">
+<p class="eyebrow">Módulo 04</p>
+<h1>Voz</h1>
+<p class="page-description">Usa la voz para dictar una queja o escuchar en voz alta la última respuesta del asistente.</p>
+</div>
+<section class="chat-panel" aria-labelledby="speech-heading">
+<h2 id="speech-heading">Dictado y lectura en voz alta</h2>
+<p>La transcripción aparecerá en "Quejas" para que la revises antes de analizarla. El audio no se guarda en esta aplicación.</p>
+<div class="form-footer">
+<button id="speech-dictate" type="button">Dictar queja</button>
+<button id="speech-read" type="button" disabled>Escuchar última respuesta</button>
+</div>
+<p id="speech-status" role="status" aria-live="polite"></p>
+</section>
+</section>
+
+<section class="view-panel" id="vision-panel" data-view-panel="vision" hidden>
+<div class="page-heading">
+<p class="eyebrow">Módulo 05</p>
+<h1>Análisis visual</h1>
+<p class="page-description">Identifica elementos y condiciones visibles en una imagen como apoyo a la inspección humana.</p>
+</div>
+<section class="chat-panel" aria-labelledby="vision-heading">
+<h2 id="vision-heading">Análisis visual de paquetes</h2>
+<p>Selecciona una imagen PNG sintética de hasta 5 MB. El resultado es una sugerencia visual y requiere revisión humana.</p>
+<form id="vision-form">
+<label for="vision-file">Selecciona una imagen sintética</label>
+<input id="vision-file" name="image" type="file" accept=".png,image/png" required>
+<button type="submit" disabled>Analizar imagen</button>
+<p id="vision-status" role="status" aria-live="polite"></p>
+</form>
+<div id="vision-result" class="invoice-results" aria-live="polite" hidden>
+<h3>Resultado — requiere revisión humana</h3>
+<p id="vision-count"></p>
+<ul id="vision-boxes"></ul>
+<p id="vision-summary"></p>
+<p id="vision-review"></p>
+</div>
+</section>
+</section>
+<footer>Las respuestas son de demostración, deben revisarse y no representan decisiones oficiales de Río Claro. ¿Necesitas ayuda con algo que la IA no resuelve? Contáctanos: <strong>55-XXXX-XXXX</strong> (número ficticio; no operativo).</footer>
+</main>
+</div>
+</div>
+<script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
+<script src="/app.js" defer></script>
+</body>
+</html>
