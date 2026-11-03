@@ -1,7 +1,8 @@
 # Río Claro — de datos dispersos a un prototipo de IA útil
 
 **Proyecto integrador AI-901 · Microsoft Azure AI Fundamentals**  
-**Fecha de preparación:** 2 de noviembre de 2026  
+**Última actualización:** 3 de noviembre de 2026
+
 **Aplicación publicada:** [Centro de operaciones Río Claro](https://rio-claro-demo-261031-ezhkfqdvfrdyb2dp.westus3-01.azurewebsites.net/)
 
 **Base de requisitos:** *Proyecto_AI-901_Rio_Claro Final.pdf*, secciones 2 a 6.
@@ -37,10 +38,10 @@ El sitio reúne en una sola aplicación web estos flujos:
 
 | Módulo | Qué demuestra | Límite actual |
 |---|---|---|
-| **Asistente** | Conversación con un agente de Microsoft Foundry para fuentes documentales; responde consultas reconocidas sobre productos, precio demo y existencias por sucursal con una búsqueda determinista en el catálogo sintético. | El catálogo no contiene datos reales ni se envía al agente para responder; una consulta reconocida no llama a IA. No consulta pedidos, inventario ni precios reales. |
-| **Facturas** | Carga de un PDF, extracción de proveedor, folio, fecha y total con confianza, y alerta por coincidencia de proveedor/folio con el registro sintético o con un análisis previo mientras la instancia esté activa. | No se conecta al correo, WhatsApp, Excel ni a un sistema contable. El historial de análisis es temporal, no se comparte entre instancias y se borra al reiniciar; una coincidencia solo por folio es una alerta ambigua. La alerta no bloquea pagos y toda extracción requiere revisión humana. |
-| **Quejas** | Análisis de sentimiento y aspectos mencionados, con evidencia textual. | No almacena ni enlaza casos repetidos y no responde al cliente ni registra acciones de seguimiento. |
-| **Voz** | Dictado en español que pasa el texto a Quejas y lectura en voz alta de una respuesta disponible del asistente. | No consulta el inventario por voz ni guarda audio. El uso del micrófono depende de los permisos del navegador y del equipo. |
+| **Asistente IA** | Conversación con un agente de Microsoft Foundry para fuentes documentales; responde consultas reconocidas sobre productos, precio demo y existencias por sucursal con una búsqueda determinista en el catálogo sintético. | El catálogo no contiene datos reales ni se envía al agente para responder; una consulta reconocida no llama a IA. No consulta pedidos, inventario ni precios reales, ni ofrece noticias o información en tiempo real. |
+| **Facturas** | Carga de un PDF, extracción de proveedor, folio, fecha y total con confianza, y alerta por coincidencia de proveedor/folio con el registro sintético o con un análisis previo mientras la instancia esté activa. Tras un análisis exitoso, se puede limpiar el formulario para una nueva revisión. | No se conecta al correo, WhatsApp, Excel ni a un sistema contable. El historial de análisis es temporal, no se comparte entre instancias y se borra al reiniciar; una coincidencia solo por folio es una alerta ambigua. La alerta no bloquea pagos y toda extracción requiere revisión humana. |
+| **Quejas** | Análisis de sentimiento y aspectos mencionados, con evidencia textual. El formulario limita el texto a 500 caracteres, muestra un contador y permite limpiar el resultado para otra revisión. | No almacena ni enlaza casos repetidos y no responde al cliente ni registra acciones de seguimiento. La clasificación es una sugerencia que requiere revisión humana. |
+| **Voz y Audio** | Dictado en español que pasa el texto a Quejas y lectura en voz alta de la última respuesta disponible del Asistente IA. El botón de lectura se habilita cuando hay una respuesta. | No consulta el inventario por voz ni guarda audio. La transcripción puede omitir palabras y debe revisarse; el uso del micrófono depende de los permisos del navegador y del equipo. |
 | **Análisis visual** | Análisis de una imagen PNG para describir paquetes y condiciones visibles. | No confirma el contenido de una caja, no determina responsabilidades y requiere inspección humana. |
 | **Ventas y catálogo** | Catálogo de demostración con nombres alternativos normalizados, precios unitarios ficticios, existencias inventadas por sucursal y comparación aritmética de ventas mensuales entre cinco sucursales. | No concilia libros, archivos ni sistemas externos; precios y existencias no representan disponibilidad comercial ni deben sustentar decisiones del negocio. |
 
@@ -57,8 +58,8 @@ El escenario contiene cinco sucursales y doce meses simulados de 2026, con una s
 | Necesidad o criterio del curso | Función demostrable | Estado / limitación explícita |
 |---|---|---|
 | IA generativa y agentes | El asistente y los flujos especializados de análisis usan agentes de Foundry. | Se trabaja con las fuentes y datos sintéticos preparados para la demostración. |
-| Reducir la captura manual de facturas | Extracción de campos, nivel de confianza y revisión de posibles duplicados. | El prototipo no automatiza la recepción ni la contabilización; no se ha medido una reducción de horas. |
-| Prevenir pagos duplicados | Coincidencia de proveedor y folio contra un registro de prueba. | Es una advertencia, no una garantía de «cero pagos duplicados» ni una autorización o bloqueo de pago. |
+| Reducir la captura manual de facturas | Extracción de campos, nivel de confianza y revisión de posibles duplicados, con reinicio del formulario para el siguiente análisis. | El prototipo no automatiza la recepción ni la contabilización; no se ha medido una reducción de horas. |
+| Prevenir pagos duplicados | Coincidencia principal por proveedor y folio con el registro sintético; coincidencia temporal con análisis previos mientras la instancia está activa. Si no se extrajo el proveedor, el folio repetido genera solo una alerta posible. | Es una advertencia, no una garantía de «cero pagos duplicados» ni una autorización o bloqueo de pago. El historial temporal se pierde al reiniciar y no se comparte entre instancias. |
 | Responder dudas de clientes y empleados | Interfaz de conversación basada en material documental de demostración. | No tiene conexión a los canales de atención ni contexto de pedidos; no se mide el tiempo de respuesta del negocio. |
 | Analizar quejas y temas recurrentes | Clasificación de sentimiento y aspectos con evidencia. | No centraliza quejas ni calcula tendencias históricas. |
 | Consultar precios y existencias por producto/sucursal | Tabla operativa y consulta en el Asistente con el mismo conjunto estático de precios y unidades sintéticas por sucursal. | El ejemplo no se conecta a inventarios reales, no confirma disponibilidad comercial y requiere que negocio valide precios, impuestos y presentaciones. |
@@ -132,20 +133,30 @@ El documento de entrega es Markdown. Mantén la carpeta `evidencias` junto a est
 
 ![Tabla sintética de precio unitario y existencias de demostración por sucursal](./evidencias/08-precios-existencias.png)
 
-### Pruebas funcionales sintéticas realizadas durante el desarrollo
+### Pruebas funcionales sintéticas realizadas
+
+El 3 de noviembre de 2026 se realizaron pruebas manuales en la aplicación publicada, con preguntas y archivos de demostración. Las llamadas a Foundry, Document Intelligence y Speech sí consumieron sus respectivos servicios y pueden consumir cuota. No se usaron datos personales, pedidos reales ni documentos comerciales.
+
+- **Asistente IA — pregunta fuera de alcance:** ante una pregunta por noticias actuales de Guadalajara, indicó que no tenía evidencia suficiente, no inventó titulares y orientó a consultar medios locales o autoridades; también ofreció ayuda con información de Río Claro.
+- **Asistente IA — consulta documental:** respondió que una devolución de un producto sin daño y cerrado puede solicitarse dentro de los 7 días naturales posteriores a la entrega, con empaque cerrado y comprobante sintético. Identificó la política de demostración, citó la fuente y remitió excepciones a una persona responsable, sin garantizar la devolución.
+- **Facturas — formulario:** tras un análisis exitoso, el botón de análisis se desactivó y apareció **Limpiar**; al limpiarlo, el formulario quedó disponible para otro análisis.
+- **Facturas — posible duplicado sin proveedor:** se analizó dos veces el mismo PDF ficticio, cuyo proveedor no pudo extraerse y cuyo folio tuvo 50 % de confianza. En el segundo análisis se marcó como posible duplicado por coincidencia de folio con un análisis previo, aclarando que el proveedor no se confirmó y requiriendo revisión humana. El total no se usó como identificador. Esta alerta es ambigua y no sustituye la verificación manual del documento.
+- **Quejas:** una queja redactada para la prueba se clasificó como negativa e identificó entrega tardía con evidencia textual coherente. Se confirmó que **Limpiar** permite reiniciar el formulario para otra queja.
+- **Voz y Audio — dictado:** la transcripción apareció en Quejas y conservó el sentido principal de la frase dictada, aunque omitió un saludo inicial. Se debe revisar y corregir la transcripción antes de analizarla.
+- **Voz y Audio — lectura:** el botón estuvo inactivo antes de recibir respuesta del Asistente IA; después de una consulta, se habilitó y leyó la respuesta de forma clara y completa.
 
 Antes de publicar se probaron localmente los flujos con material sintético:
 
-- **Facturas:** extracción de proveedor, folio, fecha y total; presentación de confianza y coincidencia con el registro ficticio.
+- **Facturas:** extracción de proveedor, folio, fecha y total; presentación de confianza y coincidencia con el registro ficticio. La detección temporal entre análisis está limitada a la instancia activa.
 - **Quejas:** el caso de demostración se clasificó como negativo e identificó entrega tardía y mercancía dañada con evidencia textual.
-- **Voz:** el dictado pasó texto al campo de quejas y la lectura en voz alta reprodujo una respuesta del asistente.
+- **Voz y Audio:** el dictado pasó texto al campo de Quejas y la lectura en voz alta reprodujo una respuesta del Asistente IA.
 - **Visión:** una imagen sintética produjo tres cajas descritas; la caja central se identificó con daños visibles y el resultado indicó revisión humana.
-- **Asistente:** se comprobó conversación con las fuentes de demostración configuradas.
+- **Asistente IA:** se comprobó conversación con las fuentes de demostración configuradas.
 - **Despliegue:** se confirmó la publicación del paquete en App Service, el estado `Running`, la redirección al inicio de sesión de Entra y, después de iniciar sesión, la carga del Centro de operaciones.
 - **Consulta operativa publicada:** «¿Cuánto cloro de litro nos queda?» mostró el precio demo de $28.50 MXN y 108 unidades sintéticas distribuidas entre las cinco sucursales; el seguimiento «¿Y en Zapopan?» respondió 26. Se verificó que ambas consultas no llamaron al endpoint `/api/chat` ni al agente de IA.
 - **Consulta de falta de existencias:** «¿En qué sucursal no tenemos ya Cloro líquido 1 L?» identificó León con 0 unidades sintéticas. La respuesta se limita a las sucursales sin existencias y no llamó al endpoint `/api/chat` ni al agente de IA.
 
-No se invocaron los módulos de IA durante la publicación, la navegación de capturas ni la preparación de este documento. La respuesta ilustrada en la captura 07 se obtuvo del catálogo estático sintético, sin consumo de IA.
+Las capturas incluidas se tomaron antes de las pruebas manuales descritas arriba; durante su toma no se enviaron archivos, audio ni imágenes a servicios de IA. La respuesta ilustrada en la captura 07 se obtuvo del catálogo estático sintético, sin consumo de IA. Las pruebas en vivo documentadas en esta sección sí invocaron los servicios indicados.
 
 ## 8. Resultado y siguientes pasos posibles
 
