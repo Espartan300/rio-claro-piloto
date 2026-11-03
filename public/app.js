@@ -606,6 +606,10 @@ updateFormState();
 const invoiceForm = document.querySelector("#invoice-form");
 const invoiceFile = document.querySelector("#invoice-file");
 const invoiceButton = invoiceForm.querySelector("button[type='submit']");
+const invoiceClearButton = document.querySelector("#invoice-clear");
+const invoiceConfirmation = invoiceForm.querySelector(
+  "input[name='synthetic-confirmation']",
+);
 const invoiceStatus = document.querySelector("#invoice-status");
 const invoiceResult = document.querySelector("#invoice-result");
 const invoiceVendor = document.querySelector("#invoice-vendor");
@@ -615,12 +619,40 @@ const invoiceTotal = document.querySelector("#invoice-total");
 const invoiceReview = document.querySelector("#invoice-review");
 
 let isAnalyzingInvoice = false;
+let invoiceAnalysisCompleted = false;
+
+function updateInvoiceFormState() {
+  invoiceButton.disabled =
+    isAnalyzingInvoice ||
+    invoiceAnalysisCompleted ||
+    invoiceFile.files.length === 0 ||
+    !invoiceConfirmation.checked;
+}
+
+function clearInvoiceForm() {
+  invoiceForm.reset();
+  invoiceAnalysisCompleted = false;
+  invoiceStatus.textContent = "";
+  invoiceResult.hidden = true;
+  invoiceVendor.textContent = "—";
+  invoiceNumber.textContent = "—";
+  invoiceDate.textContent = "—";
+  invoiceTotal.textContent = "—";
+  invoiceReview.textContent = "";
+  invoiceFile.disabled = false;
+  invoiceConfirmation.disabled = false;
+  invoiceClearButton.hidden = true;
+  updateInvoiceFormState();
+  invoiceConfirmation.focus();
+}
 
 invoiceFile.addEventListener("change", () => {
   invoiceStatus.textContent = "";
   invoiceResult.hidden = true;
-  invoiceButton.disabled = isAnalyzingInvoice || invoiceFile.files.length === 0;
+  updateInvoiceFormState();
 });
+invoiceConfirmation.addEventListener("change", updateInvoiceFormState);
+invoiceClearButton.addEventListener("click", clearInvoiceForm);
 
 invoiceForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -714,6 +746,10 @@ invoiceForm.addEventListener("submit", async (event) => {
     ]
       .filter(Boolean)
       .join(" ");
+    invoiceAnalysisCompleted = true;
+    invoiceFile.disabled = true;
+    invoiceConfirmation.disabled = true;
+    invoiceClearButton.hidden = false;
     invoiceResult.hidden = false;
     invoiceStatus.textContent = "Análisis completado.";
   } catch {
@@ -721,11 +757,14 @@ invoiceForm.addEventListener("submit", async (event) => {
       "No se pudo conectar con el servidor. Comprueba que siga activo.";
   } finally {
     isAnalyzingInvoice = false;
-    invoiceButton.disabled = invoiceFile.files.length === 0;
+    updateInvoiceFormState();
   }
 });
 const textAnalysisForm = document.querySelector("#text-analysis-form");
 const complaintInput = document.querySelector("#complaint-text");
+const complaintCounter = document.querySelector("#complaint-counter");
+const textAnalysisButton = document.querySelector("#text-analysis-submit");
+const textAnalysisClearButton = document.querySelector("#text-analysis-clear");
 const textAnalysisStatus = document.querySelector("#text-analysis-status");
 const textAnalysisResult = document.querySelector("#text-analysis-result");
 const textAnalysisSentiment = document.querySelector("#text-analysis-sentiment");
@@ -733,17 +772,46 @@ const textAnalysisAspects = document.querySelector("#text-analysis-aspects");
 const textAnalysisReview = document.querySelector("#text-analysis-review");
 
 let isAnalyzingText = false;
+let textAnalysisCompleted = false;
+
+function updateTextAnalysisFormState() {
+  complaintCounter.textContent = `${complaintInput.value.length}/500`;
+  textAnalysisButton.disabled =
+    isAnalyzingText ||
+    textAnalysisCompleted ||
+    complaintInput.value.trim().length === 0 ||
+    complaintInput.value.length > 500;
+}
+
+function clearTextAnalysisForm() {
+  textAnalysisForm.reset();
+  textAnalysisCompleted = false;
+  complaintInput.disabled = false;
+  textAnalysisStatus.textContent = "";
+  textAnalysisResult.hidden = true;
+  textAnalysisSentiment.textContent = "";
+  textAnalysisAspects.replaceChildren();
+  textAnalysisReview.textContent = "";
+  textAnalysisClearButton.hidden = true;
+  updateTextAnalysisFormState();
+  complaintInput.focus();
+}
+
+complaintInput.addEventListener("input", updateTextAnalysisFormState);
+textAnalysisClearButton.addEventListener("click", clearTextAnalysisForm);
+updateTextAnalysisFormState();
 
 textAnalysisForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const text = complaintInput.value.trim();
 
-  if (isAnalyzingText || text.length < 1 || text.length > 2000) {
-    textAnalysisStatus.textContent = "Escribe un texto de 1 a 2000 caracteres.";
+  if (isAnalyzingText || text.length < 1 || text.length > 500) {
+    textAnalysisStatus.textContent = "Escribe una queja de 1 a 500 caracteres.";
     return;
   }
 
   isAnalyzingText = true;
+  updateTextAnalysisFormState();
   textAnalysisStatus.textContent = "Analizando la queja sintética…";
   textAnalysisResult.hidden = true;
 
@@ -818,6 +886,9 @@ textAnalysisForm.addEventListener("submit", async (event) => {
 
     textAnalysisReview.textContent =
       "La revisión humana es obligatoria. El análisis no responde a la queja ni registra acciones.";
+    textAnalysisCompleted = true;
+    complaintInput.disabled = true;
+    textAnalysisClearButton.hidden = false;
     textAnalysisResult.hidden = false;
     textAnalysisStatus.textContent = "Análisis completado.";
   } catch {
@@ -825,13 +896,22 @@ textAnalysisForm.addEventListener("submit", async (event) => {
       "No se pudo conectar con el servidor. Comprueba que siga activo.";
   } finally {
     isAnalyzingText = false;
+    updateTextAnalysisFormState();
   }
 });
 const speechDictateButton = document.querySelector("#speech-dictate");
 const speechReadButton = document.querySelector("#speech-read");
-const speechStatus = document.querySelector("#speech-status");
+const speechDictateStatus = document.querySelector("#speech-dictate-status");
+const speechReadStatus = document.querySelector("#speech-read-status");
 
 let isSpeechBusy = false;
+
+function updateSpeechReadButton() {
+  speechReadButton.disabled =
+    isSpeechBusy || !chatLog.querySelector(".message-assistant");
+}
+
+updateSpeechReadButton();
 
 async function getSpeechConfig() {
   if (!window.SpeechSDK) {
@@ -863,8 +943,8 @@ speechDictateButton.addEventListener("click", async () => {
 
   isSpeechBusy = true;
   speechDictateButton.disabled = true;
-  speechReadButton.disabled = true;
-  speechStatus.textContent = "Escuchando una frase en español…";
+  updateSpeechReadButton();
+  speechDictateStatus.textContent = "Escuchando una frase en español…";
 
   let recognizer;
 
@@ -881,24 +961,25 @@ speechDictateButton.addEventListener("click", async () => {
       result.reason !== window.SpeechSDK.ResultReason.RecognizedSpeech ||
       !result.text.trim()
     ) {
-      speechStatus.textContent =
+      speechDictateStatus.textContent =
         "No se reconoció una frase. Intenta de nuevo en un lugar silencioso.";
       return;
     }
 
-    complaintInput.value = result.text;
-    speechStatus.textContent =
-      "Transcripción lista. Revísala antes de enviarla al análisis.";
+    complaintInput.value = result.text.slice(0, 500);
+    complaintInput.dispatchEvent(new Event("input", { bubbles: true }));
+    speechDictateStatus.textContent = result.text.length > 500
+      ? "La transcripción se limitó a 500 caracteres. Revísala antes de enviarla al análisis."
+      : "Transcripción lista. Revísala antes de enviarla al análisis.";
   } catch (error) {
     console.error("Speech recognition failed:", error);
-    speechStatus.textContent =
+    speechDictateStatus.textContent =
       "No se pudo transcribir. Revisa el permiso del micrófono y vuelve a intentar.";
   } finally {
     recognizer?.close();
     isSpeechBusy = false;
     speechDictateButton.disabled = false;
-    speechReadButton.disabled =
-      !chatLog.querySelector(".message-assistant");
+    updateSpeechReadButton();
   }
 });
 
@@ -911,15 +992,15 @@ speechReadButton.addEventListener("click", async () => {
   const text = lastAssistantMessage?.textContent?.trim();
 
   if (!text) {
-    speechStatus.textContent = "Todavía no hay una respuesta para leer.";
-    speechReadButton.disabled = true;
+    speechReadStatus.textContent = "Todavía no hay una respuesta para leer.";
+    updateSpeechReadButton();
     return;
   }
 
   isSpeechBusy = true;
   speechDictateButton.disabled = true;
-  speechReadButton.disabled = true;
-  speechStatus.textContent = "Preparando la lectura en voz alta…";
+  updateSpeechReadButton();
+  speechReadStatus.textContent = "Preparando la lectura en voz alta…";
 
   let synthesizer;
 
@@ -932,7 +1013,7 @@ speechReadButton.addEventListener("click", async () => {
         text,
         (result) => {
           if (result.reason === window.SpeechSDK.ResultReason.SynthesizingAudioCompleted) {
-            speechStatus.textContent = "Lectura completada.";
+            speechReadStatus.textContent = "Lectura completada.";
             resolve();
           } else {
             reject(new Error("Speech synthesis did not complete."));
@@ -943,20 +1024,18 @@ speechReadButton.addEventListener("click", async () => {
     });
   } catch (error) {
     console.error("Speech synthesis failed:", error);
-    speechStatus.textContent =
+    speechReadStatus.textContent =
       "No se pudo reproducir la respuesta. Comprueba el audio del dispositivo.";
   } finally {
     synthesizer?.close();
     isSpeechBusy = false;
     speechDictateButton.disabled = false;
-    speechReadButton.disabled =
-      !chatLog.querySelector(".message-assistant");
+    updateSpeechReadButton();
   }
 });
 
 const speechReadObserver = new MutationObserver(() => {
-  speechReadButton.disabled =
-    isSpeechBusy || !chatLog.querySelector(".message-assistant");
+  updateSpeechReadButton();
 });
 
 speechReadObserver.observe(chatLog, { childList: true });

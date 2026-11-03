@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Asistente operativo de demostración de Distribuidora Río Claro">
+<meta name="description" content="Asistente IA operativo de demostración de Distribuidora Río Claro">
 <title>Río Claro | Centro de operaciones</title>
 <style>
 :root {
@@ -111,6 +111,9 @@ h3 { font-size: 1.05rem; }
 }
 .chat-panel { margin-top: 1rem; }
 .chat-panel > p { color: #627285; line-height: 1.6; }
+.voice-help { margin: 0.75rem 0 0; color: #627285; line-height: 1.6; }
+.voice-help a { color: #8d1b68; font-weight: 700; }
+.voice-help a:focus-visible { outline: 3px solid #d35b9e; outline-offset: 3px; }
 .home-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(15rem, 0.8fr); gap: 1rem; }
 .welcome-card { position: relative; min-height: 16rem; overflow: hidden; padding-right: clamp(8rem, 19vw, 15rem); color: #fff; background: linear-gradient(125deg, #2b0735 0%, #54105d 58%, #9a1d70 100%); border: 0; }
 .welcome-card::after { position: absolute; z-index: 0; width: 13rem; height: 13rem; right: -3rem; bottom: -7rem; border: 1px solid #ffffff2b; border-radius: 50%; content: ""; box-shadow: 0 0 0 1.6rem #ffffff08, 0 0 0 3.2rem #ffffff06; }
@@ -181,14 +184,34 @@ button[type="submit"], .form-footer button:not(.nav-link) {
   font-weight: 700;
   transition: background-color 150ms ease, transform 150ms ease;
 }
+.invoice-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
+.invoice-actions button { flex: 1 1 10rem; padding: 0.72rem 1.15rem; border: 0; border-radius: 0.6rem; color: #fff; background: #8d1b68; font: inherit; font-weight: 700; }
+.invoice-actions .secondary-button { color: #64104f; background: #f1e7f0; border: 1px solid #cda9c5; }
+.complaint-counter { display: block; margin: 0.35rem 0 0.85rem; color: #6f5e73; font-size: 0.85rem; text-align: right; }
+.complaint-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.complaint-actions button { flex: 1 1 10rem; padding: 0.72rem 1.15rem; border: 0; border-radius: 0.6rem; color: #fff; background: #8d1b68; font: inherit; font-weight: 700; }
+.complaint-actions .secondary-button { color: #64104f; background: #f1e7f0; border: 1px solid #cda9c5; }
+.voice-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
+.voice-card { display: flex; flex-direction: column; padding: clamp(1rem, 2.4vw, 1.6rem); border: 1px solid #eadfea; border-radius: 1rem; background: #fff; box-shadow: 0 0.65rem 1.8rem #1c34450a; }
+.voice-card-listen { aspect-ratio: 1; }
+.voice-card p { color: #627285; line-height: 1.6; }
+.voice-card button { width: 100%; margin-top: auto; padding: 0.72rem 1.15rem; border: 0; border-radius: 0.6rem; color: #fff; background: #8d1b68; font: inherit; font-weight: 700; transition: background-color 150ms ease, transform 150ms ease; }
+.voice-card button:hover:not(:disabled) { background: #64104f; transform: translateY(-1px); }
+.voice-card button:disabled { cursor: not-allowed; opacity: 0.55; }
+.voice-card button:focus-visible { outline: 3px solid #d35b9e; outline-offset: 3px; }
+.voice-card [role="status"] { min-height: 1.5em; margin-bottom: 0; }
 .invoice-results { margin-top: 1rem; padding: 1rem; border: 1px solid #e4d8e7; border-radius: 0.75rem; background: #faf7fb; line-height: 1.6; }
 button[type="submit"]:hover:not(:disabled), .form-footer button:hover:not(:disabled) { background: #64104f; transform: translateY(-1px); }
+.invoice-actions button:hover:not(:disabled) { background: #64104f; transform: translateY(-1px); }
+.invoice-actions .secondary-button:hover:not(:disabled) { color: #fff; background: #64104f; }
+.complaint-actions button:hover:not(:disabled) { background: #64104f; transform: translateY(-1px); }
+.complaint-actions .secondary-button:hover:not(:disabled) { color: #fff; background: #64104f; }
 input[type="file"] { display: block; width: 100%; margin: 0.5rem 0 1rem; padding: 0.75rem; border: 1px dashed #b6a2ba; border-radius: 0.65rem; color: #66536b; background: #fbf8fc; font: inherit; }
 input[type="checkbox"] { width: 1.05rem; height: 1.05rem; margin: 0 0.5rem 0 0; vertical-align: middle; accent-color: #8d1b68; }
 .invoice-results dl { display: grid; grid-template-columns: minmax(8rem, 0.35fr) 1fr; gap: 0.5rem 1rem; }
 .invoice-results dt { color: #49364f; font-weight: 700; }
 .invoice-results dd { margin: 0; color: #66536b; overflow-wrap: anywhere; }
-#chat-status, #invoice-status, #text-analysis-status, #speech-status, #vision-status { min-height: 1.5em; color: #6f5e73; }
+#chat-status, #invoice-status, #text-analysis-status, #speech-dictate-status, #speech-read-status, #vision-status { min-height: 1.5em; color: #6f5e73; }
 footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; color: #766b7a; font-size: 0.82rem; line-height: 1.5; }
 
 @media (max-width: 900px) {
@@ -196,6 +219,7 @@ footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; col
   .workspace { grid-template-columns: 12.5rem minmax(0, 1fr); }
   .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .home-grid { grid-template-columns: 1fr; }
+  .voice-tools { grid-template-columns: 1fr; }
   .chart-layout { grid-template-columns: 1fr; }
   .chart-legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -220,7 +244,11 @@ footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; col
   .home-card { min-height: 8rem; }
   .chat-panel { margin-top: 0.75rem; }
   .form-footer { align-items: stretch; flex-direction: column; }
-  .form-footer button, form button[type="submit"] { width: 100%; }
+  .form-footer button, form button[type="submit"], .invoice-actions button, .complaint-actions button { width: 100%; }
+  .invoice-actions { flex-direction: column; }
+  .complaint-actions { flex-direction: column; }
+  .voice-tools { grid-template-columns: 1fr; }
+  .voice-card-listen { aspect-ratio: auto; min-height: 16rem; }
   .invoice-results dl { grid-template-columns: 1fr; gap: 0.25rem; }
   .invoice-results dd { margin-bottom: 0.5rem; }
   .message { max-width: 96%; }
@@ -248,10 +276,10 @@ footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; col
 <p class="nav-title">Navegación</p>
 <nav class="primary-nav" aria-label="Módulos del centro de operaciones">
 <button class="nav-link" type="button" data-view-target="home" data-view-label="Inicio" aria-controls="home-panel" aria-current="page"><span class="nav-number">01</span>Inicio</button>
-<button class="nav-link" type="button" data-view-target="assistant" data-view-label="Asistente" aria-controls="assistant-panel"><span class="nav-number">02</span>Asistente</button>
+<button class="nav-link" type="button" data-view-target="assistant" data-view-label="Asistente IA" aria-controls="assistant-panel"><span class="nav-number">02</span>Asistente IA</button>
 <button class="nav-link" type="button" data-view-target="invoices" data-view-label="Facturas" aria-controls="invoice-panel"><span class="nav-number">03</span>Facturas</button>
 <button class="nav-link" type="button" data-view-target="complaints" data-view-label="Quejas" aria-controls="complaint-panel"><span class="nav-number">04</span>Quejas</button>
-<button class="nav-link" type="button" data-view-target="voice" data-view-label="Voz" aria-controls="speech-panel"><span class="nav-number">05</span>Voz</button>
+<button class="nav-link" type="button" data-view-target="voice" data-view-label="Voz y Audio" aria-controls="speech-panel"><span class="nav-number">05</span>Voz y Audio</button>
 <button class="nav-link" type="button" data-view-target="vision" data-view-label="Análisis visual" aria-controls="vision-panel"><span class="nav-number">06</span>Análisis visual</button>
 <button class="nav-link" type="button" data-view-target="sales-catalog" data-view-label="Ventas y catálogo" aria-controls="sales-catalog-panel"><span class="nav-number">07</span>Ventas y catálogo</button>
 </nav>
@@ -317,10 +345,10 @@ footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; col
 </div>
 </section>
 <div class="module-grid" aria-label="Accesos a módulos">
-<button class="home-card" type="button" data-view-target="assistant" data-view-label="Asistente" aria-controls="assistant-panel"><span class="card-kicker">01 · Consulta</span><strong>Asistente</strong><span>Respuestas basadas en las fuentes disponibles.</span></button>
+<button class="home-card" type="button" data-view-target="assistant" data-view-label="Asistente IA" aria-controls="assistant-panel"><span class="card-kicker">01 · Consulta</span><strong>Asistente IA</strong><span>Respuestas basadas en las fuentes disponibles.</span></button>
 <button class="home-card" type="button" data-view-target="invoices" data-view-label="Facturas" aria-controls="invoice-panel"><span class="card-kicker">02 · Revisión</span><strong>Facturas</strong><span>Extracción de datos y alerta de posibles duplicados.</span></button>
 <button class="home-card" type="button" data-view-target="complaints" data-view-label="Quejas" aria-controls="complaint-panel"><span class="card-kicker">03 · Análisis</span><strong>Quejas</strong><span>Clasificación sugerida de sentimiento y aspectos.</span></button>
-<button class="home-card" type="button" data-view-target="voice" data-view-label="Voz" aria-controls="speech-panel"><span class="card-kicker">04 · Accesibilidad</span><strong>Voz</strong><span>Dicta una queja o escucha la respuesta del asistente.</span></button>
+<button class="home-card" type="button" data-view-target="voice" data-view-label="Voz y Audio" aria-controls="speech-panel"><span class="card-kicker">04 · Accesibilidad</span><strong>Voz y Audio</strong><span>Dicta una queja o escucha la respuesta del Asistente IA.</span></button>
 <button class="home-card" type="button" data-view-target="vision" data-view-label="Análisis visual" aria-controls="vision-panel"><span class="card-kicker">05 · Inspección</span><strong>Análisis visual</strong><span>Describe elementos visibles en una imagen de paquetes.</span></button>
 <button class="home-card" type="button" data-view-target="sales-catalog" data-view-label="Ventas y catálogo" aria-controls="sales-catalog-panel"><span class="card-kicker">06 · Datos</span><strong>Ventas y catálogo</strong><span>Consulta productos, precios y existencias simuladas por sucursal.</span></button>
 </div>
@@ -401,12 +429,12 @@ footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; col
 <section class="view-panel" id="assistant-panel" data-view-panel="assistant" hidden>
 <div class="page-heading">
 <p class="eyebrow">Módulo 01</p>
-<h1>Asistente</h1>
-<p class="page-description">Pregunta sobre las políticas y la información documentada; también puedes consultar precios y existencias del catálogo sintético.</p>
+<h1>Asistente IA</h1>
+<p class="page-description">Pregunta y asesórate acerca de las políticas y la información documentada de Río Claro; toda consulta será tratada con el debido respeto y con la mejor disponibilidad para su consideración.</p>
 </div>
 <section class="chat-panel" aria-labelledby="chat-heading">
 <h2 id="chat-heading">¿En qué puedo ayudarte?</h2>
-<p>También puedes consultar el catálogo de demostración, por ejemplo: «¿Cuánto cloro de litro queda y en qué sucursales?» Esos precios y existencias son ficticios; si necesitas ayuda fuera de esta demostración, el contacto mostrado al pie no es operativo.</p>
+<p>Sugerencias de consulta: puedes preguntar sobre las políticas y la información documentada de Río Claro, o consultar el catálogo ficticio; por ejemplo: «¿Cuánto cloro de litro queda y en qué sucursales?». También puedes consultar sus precios y existencias de demostración. Si necesitas ayuda fuera de esta demostración, solicita orientación a tu docente o a la persona responsable; el contacto del pie de página es ficticio y no está operativo.</p>
 <div id="chat-log" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Conversación">
 <p id="empty-state" class="empty-state">Escribe una pregunta sobre las políticas, la información o el catálogo sintético.</p>
 </div>
@@ -417,6 +445,7 @@ footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; col
 <small id="character-count">0/2000</small>
 <button type="submit" disabled>Enviar</button>
 </div>
+<p class="voice-help">Si no puedes leer la respuesta, puedes escucharla <a href="#speech-panel" data-view-target="voice">aquí</a>.</p>
 <p id="chat-status" role="status" aria-live="polite"></p>
 </form>
 </section>
@@ -430,7 +459,7 @@ footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6dce8; col
 </div>
 <section class="chat-panel" aria-labelledby="invoice-heading">
 <h2 id="invoice-heading">Analizar una factura</h2>
-<p>Usa un PDF sintético. La extracción puede equivocarse y requiere revisión humana; nunca aprueba un pago.</p>
+<p>Usa únicamente archivos PDF sintéticos. La extracción puede equivocarse y requiere revisión humana; nunca aprueba un pago.</p>
 <form id="invoice-form">
 <label>
 <input name="synthetic-confirmation" type="checkbox" required>
@@ -438,7 +467,10 @@ Confirmo que el archivo es ficticio y no contiene datos personales ni informaci�
 </label>
 <label for="invoice-file">Selecciona un PDF</label>
 <input id="invoice-file" name="invoice" type="file" accept=".pdf,application/pdf" required>
+<div class="invoice-actions">
 <button type="submit" disabled>Analizar factura</button>
+<button id="invoice-clear" class="secondary-button" type="button" hidden>Limpiar</button>
+</div>
 <p id="invoice-status" role="status" aria-live="polite"></p>
 </form>
 <div id="invoice-result" class="invoice-results" aria-live="polite" hidden>
@@ -464,11 +496,13 @@ Confirmo que el archivo es ficticio y no contiene datos personales ni informaci�
 <h2 id="text-analysis-heading">Analizar el texto de una queja</h2>
 <p>La IA clasifica el texto; el resultado es una sugerencia y requiere revisión humana.</p>
 <form id="text-analysis-form">
-<label for="complaint-text">Queja de demostración</label>
-<textarea id="complaint-text" name="text" maxlength="2000" required>CASO SINTÉTICO — No corresponde a un cliente ni pedido real.
-
-El pedido llegó tarde y varias cajas estaban dañadas. Estoy muy molesto y necesito que me expliquen cómo resolverlo.</textarea>
-<button type="submit">Analizar queja</button>
+<label for="complaint-text">Describe tu queja</label>
+<textarea id="complaint-text" name="text" maxlength="500" placeholder="Ejemplo sintético: El pedido de demostración llegó tarde y algunas cajas estaban dañadas." required></textarea>
+<small id="complaint-counter" class="complaint-counter" aria-live="polite">0/500</small>
+<div class="complaint-actions">
+<button id="text-analysis-submit" type="submit" disabled>Analizar queja</button>
+<button id="text-analysis-clear" class="secondary-button" type="button" hidden>Limpiar</button>
+</div>
 <p id="text-analysis-status" role="status" aria-live="polite"></p>
 </form>
 <div id="text-analysis-result" class="invoice-results" aria-live="polite" hidden>
@@ -483,18 +517,23 @@ El pedido llegó tarde y varias cajas estaban dañadas. Estoy muy molesto y nece
 <section class="view-panel" id="speech-panel" data-view-panel="voice" hidden>
 <div class="page-heading">
 <p class="eyebrow">Módulo 04</p>
-<h1>Voz</h1>
+<h1>Voz y Audio</h1>
 <p class="page-description">Usa la voz para dictar una queja o escuchar en voz alta la última respuesta del asistente.</p>
 </div>
-<section class="chat-panel" aria-labelledby="speech-heading">
-<h2 id="speech-heading">Dictado y lectura en voz alta</h2>
+<div class="voice-tools">
+<section class="voice-card voice-card-dictate" aria-labelledby="speech-dictate-heading">
+<h2 id="speech-dictate-heading">Dicta tu queja</h2>
 <p>La transcripción aparecerá en "Quejas" para que la revises antes de analizarla. El audio no se guarda en esta aplicación.</p>
-<div class="form-footer">
 <button id="speech-dictate" type="button">Dictar queja</button>
-<button id="speech-read" type="button" disabled>Escuchar última respuesta</button>
-</div>
-<p id="speech-status" role="status" aria-live="polite"></p>
+<p id="speech-dictate-status" role="status" aria-live="polite"></p>
 </section>
+<section class="voice-card voice-card-listen" aria-labelledby="speech-read-heading">
+<h2 id="speech-read-heading">Escuchar última respuesta del Asistente IA</h2>
+<p id="speech-read-help">Si has realizado una consulta desde el Módulo Asistente IA puedes escuchar la respuesta aquí.</p>
+<button id="speech-read" type="button" aria-describedby="speech-read-help" disabled>Escucha la última respuesta</button>
+<p id="speech-read-status" role="status" aria-live="polite"></p>
+</section>
+</div>
 </section>
 
 <section class="view-panel" id="vision-panel" data-view-panel="vision" hidden>

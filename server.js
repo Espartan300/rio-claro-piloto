@@ -182,9 +182,9 @@ app.post("/api/text-analysis", async (request, response) => {
     ? request.body.text.trim()
     : "";
 
-  if (text.length < 1 || text.length > 2000) {
+  if (text.length < 1 || text.length > 500) {
     return response.status(422).json({
-      error: "Envía un texto de 1 a 2000 caracteres.",
+      error: "Envía un texto de 1 a 500 caracteres.",
     });
   }
 
