@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { AIProjectClient } from "@azure/ai-projects";
 import { DefaultAzureCredential } from "@azure/identity";
+import { findInvoiceDuplicate } from "./invoice-duplicate.js";
 
 const app = express();
 const port = Number(process.env.PORT) || 3000;
@@ -69,12 +70,6 @@ const visionAgentReference = {
     },
   },
 };
-function normalizeInvoiceKey(value) {
-  return typeof value === "string"
-    ? value.trim().replace(/\s+/g, " ").toLocaleLowerCase("es-MX")
-    : "";
-}
-
 app.use(express.json({ limit: "10kb" }));
 
 app.get("/health", (_request, response) => {
@@ -457,28 +452,14 @@ if (!Array.isArray(registeredInvoices)) {
   throw new Error("Invoice registry must contain a JSON array.");
 }
 
-const supplierKey = normalizeInvoiceKey(extracted.supplier);
-const invoiceNumberKey = normalizeInvoiceKey(extracted.invoiceNumber);
-const duplicate = supplierKey && invoiceNumberKey
-  ? registeredInvoices.find(
-      (invoice) =>
-        normalizeInvoiceKey(invoice?.supplier) === supplierKey &&
-        normalizeInvoiceKey(invoice?.invoiceNumber) === invoiceNumberKey,
-    )
-  : undefined;
+const duplicate = findInvoiceDuplicate(registeredInvoices, extracted);
 
 return response.json({
   extracted,
   confidence,
   humanReviewRequired: true,
-  possibleDuplicate: Boolean(duplicate),
-  duplicateMatch: duplicate
-    ? {
-        invoiceDate: duplicate.invoiceDate ?? null,
-        total: duplicate.total ?? null,
-        currency: duplicate.currency ?? null,
-      }
-    : null,
+  possibleDuplicate: duplicate !== null,
+  duplicateMatch: duplicate,
   reviewReasons,
 });
 

@@ -724,8 +724,14 @@ invoiceForm.addEventListener("submit", async (event) => {
       ? data.reviewReasons.filter((reason) => typeof reason === "string")
       : [];
 
+    const duplicateReason = data.duplicateMatch?.matchType === "invoice_number_only"
+      ? "coincide el folio, pero el proveedor no pudo confirmarse"
+      : "coinciden el proveedor y el número de factura";
+    const duplicateSource = data.duplicateMatch?.source === "previous_analysis"
+      ? "un análisis previo desde que la aplicación está activa"
+      : "un registro de demostración";
     const duplicateMessage = data.possibleDuplicate === true
-      ? `Posible duplicado: coincide el proveedor y el número de factura con un registro de demostración.${
+      ? `Posible duplicado: ${duplicateReason} con ${duplicateSource}.${
           data.duplicateMatch?.invoiceDate
             ? ` Fecha del registro: ${data.duplicateMatch.invoiceDate}.`
             : ""
